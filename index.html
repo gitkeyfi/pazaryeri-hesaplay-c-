@@ -72,8 +72,7 @@
             if (desi <= 20) return 310.80;
             if (desi <= 25) return 388.50;
             if (desi <= 30) return 466.20;
-            // 31 ve sonrasındaki desiler için artan fiyat
-            return 466.20 + (desi - 30) * 15.54;
+            return 466.20 + (desi - 30) * 15.54; // 31 ve sonrası için artan fiyat
         }
 
         function hesapla() {
@@ -89,8 +88,8 @@
             const komisyonOrani = 0.215;
             const stopajOrani = 0.02;
 
-            // Net kar oranını hesaplayalım: 50 TL'den 75 TL kar = %150
-            const netKarOrani = 1.5;
+            // Net kar oranını alış fiyatına göre ayarlıyoruz
+            const netKarOrani = alisFiyati < 2000 ? 1.5 : 1.0; // 2000 TL altı için %150, üstü için %100
 
             // Minimum kar marjı, alım fiyatına bağlı olarak net kar hedefi
             const hedefKar = alisFiyati * netKarOrani;
