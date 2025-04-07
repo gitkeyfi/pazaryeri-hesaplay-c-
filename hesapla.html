@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satış Fiyatı Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Satış Fiyatı Hesaplayıcı</h1>
+        <label for="alisFiyati">Alış Fiyatı (TL):</label>
+        <input type="number" id="alisFiyati" placeholder="Örneğin: 50" required>
+
+        <label for="desi">Desi (kg):</label>
+        <input type="number" id="desi" placeholder="Örneğin: 2" required>
+
+        <button onclick="hesapla()">Hesapla</button>
+
+        <div id="sonuc" class="result"></div>
+    </div>
+
+    <script>
+        function kargo_ucreti_hesapla(desi) {
+            if (desi <= 0.99) return 40.00;
+            if (desi <= 3) return 117.90;
+            if (desi <= 5) return 135.50;
+            if (desi <= 10) return 185.40;
+            if (desi <= 15) return 258.30;
+            if (desi <= 20) return 310.80;
+            if (desi <= 25) return 388.50;
+            if (desi <= 30) return 466.20;
+            // 31 ve sonrasındaki desiler için artan fiyat
+            return 466.20 + (desi - 30) * 15.54;
+        }
+
+        function hesapla() {
+            const alisFiyati = parseFloat(document.getElementById("alisFiyati").value);
+            const desi = parseFloat(document.getElementById("desi").value);
+
+            if (isNaN(alisFiyati) || isNaN(desi)) {
+                document.getElementById("sonuc").innerHTML = "Lütfen geçerli değerler girin.";
+                return;
+            }
+
+            const kargo = kargo_ucreti_hesapla(desi);
+            const komisyonOrani = 0.215;
+            const stopajOrani = 0.02;
+
+            // Net kar oranını hesaplayalım: 50 TL'den 75 TL kar = %150
+            const netKarOrani = 1.5;
+
+            // Minimum kar marjı, alım fiyatına bağlı olarak net kar hedefi
+            const hedefKar = alisFiyati * netKarOrani;
+
+            // Başlangıçta satış fiyatını hesaplıyoruz
+            let satisFiyati = alisFiyati + kargo + hedefKar;
+
+            // Satış fiyatı yeterli değilse, giderler düşülüp tekrar ayar yapıyoruz
+            while (true) {
+                const komisyon = satisFiyati * komisyonOrani;
+                const stopaj = satisFiyati * stopajOrani;
+                const giderler = alisFiyati + kargo + komisyon + stopaj;
+                const netKar = satisFiyati - giderler;
+
+                if (netKar >= hedefKar) {
+                    break;
+                }
+                satisFiyati += 0.5; // Kademe kademe artır
+            }
+
+            document.getElementById("sonuc").innerHTML = `Gerekli Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>Net Kar: ${hedefKar.toFixed(2)} TL`;
+        }
+    </script>
+</body>
+</html>
