@@ -46,16 +46,26 @@
             font-size: 18px;
             font-weight: bold;
         }
+        .success {
+            color: green;
+        }
+        .fail {
+            color: red;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Satış Fiyatı Hesaplayıcı</h1>
+        
         <label for="alisFiyati">Alış Fiyatı (TL):</label>
         <input type="number" id="alisFiyati" placeholder="Örneğin: 50" required>
 
         <label for="desi">Desi (kg):</label>
         <input type="number" id="desi" placeholder="Örneğin: 2" required>
+
+        <label for="satisFiyati">Satış Fiyatı (TL):</label>
+        <input type="number" id="satisFiyati" placeholder="Örneğin: 300" required>
 
         <button onclick="hesapla()">Hesapla</button>
 
@@ -72,15 +82,16 @@
             if (desi <= 20) return 310.80;
             if (desi <= 25) return 388.50;
             if (desi <= 30) return 466.20;
-            return 466.20 + (desi - 30) * 15.54; // 31 ve sonrası için artan fiyat
+            return 466.20 + (desi - 30) * 15.54;
         }
 
         function hesapla() {
             const alisFiyati = parseFloat(document.getElementById("alisFiyati").value);
             const desi = parseFloat(document.getElementById("desi").value);
+            const satisFiyati = parseFloat(document.getElementById("satisFiyati").value);
 
-            if (isNaN(alisFiyati) || isNaN(desi)) {
-                document.getElementById("sonuc").innerHTML = "Lütfen geçerli değerler girin.";
+            if (isNaN(alisFiyati) || isNaN(desi) || isNaN(satisFiyati)) {
+                document.getElementById("sonuc").innerHTML = "Lütfen tüm alanlara geçerli değerler girin.";
                 return;
             }
 
@@ -88,29 +99,24 @@
             const komisyonOrani = 0.215;
             const stopajOrani = 0.02;
 
-            // Net kar oranını alış fiyatına göre ayarlıyoruz
-            const netKarOrani = alisFiyati < 2000 ? 1.5 : 1.0; // 2000 TL altı için %150, üstü için %100
+            const komisyon = satisFiyati * komisyonOrani;
+            const stopaj = satisFiyati * stopajOrani;
+            const giderler = alisFiyati + kargo + komisyon + stopaj;
+            const netKar = satisFiyati - giderler;
+            const netKarOrani = (netKar / alisFiyati) * 100;
 
-            // Minimum kar marjı, alım fiyatına bağlı olarak net kar hedefi
-            const hedefKar = alisFiyati * netKarOrani;
+            const hedefKar = alisFiyati * (alisFiyati < 2000 ? 1.5 : 1.0);
+            const hedefeUlasildiMi = netKar >= hedefKar;
 
-            // Başlangıçta satış fiyatını hesaplıyoruz
-            let satisFiyati = alisFiyati + kargo + hedefKar;
-
-            // Satış fiyatı yeterli değilse, giderler düşülüp tekrar ayar yapıyoruz
-            while (true) {
-                const komisyon = satisFiyati * komisyonOrani;
-                const stopaj = satisFiyati * stopajOrani;
-                const giderler = alisFiyati + kargo + komisyon + stopaj;
-                const netKar = satisFiyati - giderler;
-
-                if (netKar >= hedefKar) {
-                    break;
-                }
-                satisFiyati += 0.5; // Kademe kademe artır
-            }
-
-            document.getElementById("sonuc").innerHTML = `Gerekli Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>Net Kar: ${hedefKar.toFixed(2)} TL`;
+            document.getElementById("sonuc").innerHTML = `
+                Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>
+                Net Kar: ${netKar.toFixed(2)} TL<br>
+                Net Kar Oranı: %${netKarOrani.toFixed(2)}<br>
+                Hedeflenen Kar: ${hedefKar.toFixed(2)} TL<br>
+                <span class="${hedefeUlasildiMi ? 'success' : 'fail'}">
+                    Hedefe ${hedefeUlasildiMi ? 'ULAŞILDI ✅' : 'ULAŞILAMADI ❌'}
+                </span>
+            `;
         }
     </script>
 </body>
