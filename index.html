@@ -1,123 +1,139 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satış Fiyatı Hesaplama</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .success {
-            color: green;
-        }
-        .fail {
-            color: red;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kâr Hesaplama Aracı</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+    #sonuc {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Satış Fiyatı Hesaplayıcı</h1>
-        
-        <label for="alisFiyati">Alış Fiyatı (TL):</label>
-        <input type="number" id="alisFiyati" placeholder="Örneğin: 50" required>
 
-        <label for="desi">Desi (kg):</label>
-        <input type="number" id="desi" placeholder="Örneğin: 2" required>
+  <h2>Kâr Hesaplama Aracı</h2>
 
-        <label for="satisFiyati">Satış Fiyatı (TL):</label>
-        <input type="number" id="satisFiyati" placeholder="Örneğin: 300" required>
+  <label for="alisFiyati">Alış Fiyatı (TL):</label>
+  <input type="number" id="alisFiyati" placeholder="Örn: 50">
 
-        <button onclick="hesapla()">Hesapla</button>
+  <label for="desi">Kargo Desisi:</label>
+  <input type="number" id="desi" placeholder="Örn: 5">
 
-        <div id="sonuc" class="result"></div>
-    </div>
+  <label for="satisFiyati">Satış Fiyatı (TL):</label>
+  <input type="number" id="satisFiyati" placeholder="Örn: 429">
 
-    <script>
-        function kargo_ucreti_hesapla(desi) {
-            if (desi <= 0.99) return 40.00;
-            if (desi <= 3) return 117.90;
-            if (desi <= 5) return 135.50;
-            if (desi <= 10) return 185.40;
-            if (desi <= 15) return 258.30;
-            if (desi <= 20) return 310.80;
-            if (desi <= 25) return 388.50;
-            if (desi <= 30) return 466.20;
-            return 466.20 + (desi - 30) * 15.54;
-        }
+  <label for="hedefKarYuzde">Hedef Net Kâr Oranı (%):</label>
+  <input type="number" id="hedefKarYuzde" placeholder="Örn: 20" value="20">
 
-        function hesapla() {
-            const alisFiyati = parseFloat(document.getElementById("alisFiyati").value);
-            const desi = parseFloat(document.getElementById("desi").value);
-            const satisFiyati = parseFloat(document.getElementById("satisFiyati").value);
+  <button onclick="hesapla()">Hesapla</button>
 
-            if (isNaN(alisFiyati) || isNaN(desi) || isNaN(satisFiyati)) {
-                document.getElementById("sonuc").innerHTML = "Lütfen tüm alanlara geçerli değerler girin.";
-                return;
-            }
+  <div id="sonuc"></div>
 
-            const kargo = kargo_ucreti_hesapla(desi);
-            const komisyonOrani = 0.215;
-            const stopajOrani = 0.02;
+  <script>
+    function kargo_ucreti_hesapla(desi) {
+      if (desi <= 0.99) return 40.00;
+      if (desi <= 3) return 117.90;
+      if (desi <= 5) return 135.50;
+      if (desi <= 10) return 185.40;
+      if (desi <= 15) return 258.30;
+      if (desi <= 20) return 310.80;
+      if (desi <= 25) return 388.50;
+      if (desi <= 30) return 466.20;
+      return 466.20 + (desi - 30) * 15.54;
+    }
 
-            const komisyon = satisFiyati * komisyonOrani;
-            const stopaj = satisFiyati * stopajOrani;
-            const giderler = alisFiyati + kargo + komisyon + stopaj;
-            const netKar = satisFiyati - giderler;
-            const netKarOrani = (netKar / alisFiyati) * 100;
+    function hesapla() {
+      const alisFiyati = parseFloat(document.getElementById("alisFiyati").value);
+      const desi = parseFloat(document.getElementById("desi").value);
+      const satisFiyati = parseFloat(document.getElementById("satisFiyati").value);
+      const hedefKarYuzde = parseFloat(document.getElementById("hedefKarYuzde").value || "20");
 
-            const hedefKar = alisFiyati * (alisFiyati < 2000 ? 1.5 : 1.0);
-            const hedefeUlasildiMi = netKar >= hedefKar;
+      if (isNaN(alisFiyati) || isNaN(desi) || isNaN(satisFiyati)) {
+        document.getElementById("sonuc").innerHTML = "Lütfen tüm alanlara geçerli değerler girin.";
+        return;
+      }
 
-            document.getElementById("sonuc").innerHTML = `
-                Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>
-                Net Kar: ${netKar.toFixed(2)} TL<br>
-                Net Kar Oranı: %${netKarOrani.toFixed(2)}<br>
-                Hedeflenen Kar: ${hedefKar.toFixed(2)} TL<br>
-                <span class="${hedefeUlasildiMi ? 'success' : 'fail'}">
-                    Hedefe ${hedefeUlasildiMi ? 'ULAŞILDI ✅' : 'ULAŞILAMADI ❌'}
-                </span>
-            `;
-        }
-    </script>
+      const kargo = kargo_ucreti_hesapla(desi);
+      const komisyonOrani = 0.215;
+      const stopajOrani = 0.02;
+      const kdvOrani = 0.20;
+
+      const komisyon = satisFiyati * komisyonOrani;
+      const stopaj = satisFiyati * stopajOrani;
+      const kdv = satisFiyati * (kdvOrani / (1 + kdvOrani));
+      const giderler = alisFiyati + kargo + komisyon + stopaj + kdv;
+      const netKar = satisFiyati - giderler;
+      const netKarOrani = (netKar / satisFiyati) * 100;
+
+      const hedefKar = satisFiyati * (hedefKarYuzde / 100);
+      const hedefeUlasildiMi = netKar >= hedefKar;
+
+      document.getElementById("sonuc").innerHTML = `
+        Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>
+        Kargo Ücreti: ${kargo.toFixed(2)} TL<br>
+        Komisyon: ${komisyon.toFixed(2)} TL<br>
+        Stopaj: ${stopaj.toFixed(2)} TL<br>
+        KDV: ${kdv.toFixed(2)} TL<br>
+        Toplam Gider: ${giderler.toFixed(2)} TL<br><br>
+        <strong>Net Kâr: ${netKar.toFixed(2)} TL</strong><br>
+        Net Kâr Oranı: %${netKarOrani.toFixed(2)}<br>
+        Hedef Kâr: ${hedefKar.toFixed(2)} TL<br>
+        <span class="${hedefeUlasildiMi ? 'success' : 'fail'}">
+          Hedefe ${hedefeUlasildiMi ? 'ULAŞILDI ✅' : 'ULAŞILAMADI ❌'}
+        </span>
+      `;
+    }
+  </script>
+
 </body>
 </html>
