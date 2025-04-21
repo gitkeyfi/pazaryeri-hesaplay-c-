@@ -72,6 +72,9 @@
   <label for="satisFiyati">Satış Fiyatı (TL):</label>
   <input type="number" id="satisFiyati" placeholder="Örn: 429">
 
+  <label for="komisyonOrani">Komisyon Oranı (%):</label>
+  <input type="number" id="komisyonOrani" placeholder="Örn: 21.5" value="21.5">
+
   <label for="hedefKarYuzde">Hedef Net Kâr Oranı (%):</label>
   <input type="number" id="hedefKarYuzde" placeholder="Örn: 20" value="20">
 
@@ -96,19 +99,19 @@
       const alisFiyati = parseFloat(document.getElementById("alisFiyati").value);
       const desi = parseFloat(document.getElementById("desi").value);
       const satisFiyati = parseFloat(document.getElementById("satisFiyati").value);
+      const komisyonYuzde = parseFloat(document.getElementById("komisyonOrani").value || "21.5");
       const hedefKarYuzde = parseFloat(document.getElementById("hedefKarYuzde").value || "20");
 
-      if (isNaN(alisFiyati) || isNaN(desi) || isNaN(satisFiyati)) {
+      if (isNaN(alisFiyati) || isNaN(desi) || isNaN(satisFiyati) || isNaN(komisyonYuzde)) {
         document.getElementById("sonuc").innerHTML = "Lütfen tüm alanlara geçerli değerler girin.";
         return;
       }
 
       const kargo = kargo_ucreti_hesapla(desi);
-      const komisyonOrani = 0.215;
+      const komisyon = satisFiyati * (komisyonYuzde / 100);
       const stopajOrani = 0.02;
       const kdvOrani = 0.20;
 
-      const komisyon = satisFiyati * komisyonOrani;
       const stopaj = satisFiyati * stopajOrani;
       const kdv = satisFiyati * (kdvOrani / (1 + kdvOrani));
       const giderler = alisFiyati + kargo + komisyon + stopaj + kdv;
@@ -120,7 +123,7 @@
 
       document.getElementById("sonuc").innerHTML = `
         Satış Fiyatı: ${satisFiyati.toFixed(2)} TL<br>
-        Kargo Ücreti(YK): ${kargo.toFixed(2)} TL<br>
+        Kargo Ücreti (YK): ${kargo.toFixed(2)} TL<br>
         Komisyon: ${komisyon.toFixed(2)} TL<br>
         Stopaj: ${stopaj.toFixed(2)} TL<br>
         KDV: ${kdv.toFixed(2)} TL<br>
